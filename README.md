@@ -1,67 +1,64 @@
-# 남윤호 · Unity Client & Gameplay Programmer — 코드 포트폴리오
+# 남윤호 — Unity 클라이언트 / 게임플레이 프로그래머
 
-Unity / C# 클라이언트 프로그래머로 참여한 **두 개의 팀 프로젝트**에서, 제가 담당한 `NYH` 파트의 실제 구현 코드입니다.
-UI를 단순 표시 계층이 아니라 **게임 데이터·진행 상태·플레이어 피드백을 연결하는 시스템**으로 설계·구현하는 데 집중했습니다.
+팀 프로젝트 두 개에서 제가 맡은 `NYH` 파트 코드입니다.
+주로 상점, 인벤토리, 도감, 튜토리얼, 장비 같은 UI랑 그 뒤의 데이터를 담당했습니다. 버튼 하나가 제대로 동작하려면 자원이나 진행도, 편성 데이터가 서로 어긋나면 안 되는데, 그 부분을 맞추는 데 신경을 많이 썼습니다.
 
-- **이메일** · rornfl525@gmail.com
-- **기술 스택** · Unity 6 · C# · Git
-- 본 저장소는 팀 프로젝트 중 **본인 담당(`Assets/NYH`) 코드만 발췌**해 정리한 것입니다. 원본은 팀 공용 저장소에서 관리됩니다.
+- 이메일 : rornfl525@gmail.com
+- 사용 기술 : Unity 6, C#, Git
+- 팀 프로젝트라서 게임 전체 코드는 팀 저장소에 있고, 여기엔 제가 작성한 `Assets/NYH` 폴더만 옮겨서 정리했습니다.
 
----
+## 시간 없으면 이 5개만 보셔도 됩니다
 
-## ⭐ 먼저 볼 5개 파일 (바쁘면 이것만)
+1. **`StolenTime_스톨른타임/02. Scripts/Inventory/ItemGrid.cs`**
+   아이템 크기대로 여러 칸을 차지하는 격자 인벤토리입니다. 한 아이템이 차지한 모든 칸에 같은 참조를 넣어서, 어느 칸을 눌러도 같은 아이템이 잡히게 했습니다.
 
-1. **`StolenTime_스톨른타임/02. Scripts/Inventory/ItemGrid.cs`** — 아이템 크기 기반 2D 격자 인벤토리. 점유 칸 참조 관리, 경계·겹침 검사.
-2. **`StolenTime_스톨른타임/02. Scripts/Equipment/NYHEquipmentController.cs`** — 장비 스탯을 총합 재계산 후 **차이(diff)만 반영**해 중복·누락 방지.
-3. **`StolenTime_스톨른타임/02. Scripts/Traps/ITrapEffect.cs` + `GridTrap.cs`** — `ScriptableObject` + 인터페이스 조합형 함정 효과 시스템.
-4. **`DemonKing_마왕의역습/Script/ShopData/MonsterPurchaseService.cs`** — 판매 시 인벤토리·전투 편성 데이터를 함께 갱신해 일관성 유지.
-5. **`DemonKing_마왕의역습/Script/Tutorial/ClickDebugger.cs`** — 클릭이 안 먹던 버그를 `EventSystem.RaycastAll`로 추적한 디버그 툴.
+2. **`StolenTime_스톨른타임/02. Scripts/Equipment/NYHEquipmentController.cs`**
+   장비를 갈아끼우거나 강화할 때 스탯이 중복으로 쌓이는 문제가 있었는데, 전체 총합을 다시 계산해서 이전 값과의 차이만 반영하는 식으로 고쳤습니다.
 
----
+3. **`StolenTime_스톨른타임/02. Scripts/Traps/ITrapEffect.cs`, `GridTrap.cs`**
+   함정 효과를 인터페이스로 쪼개서 조합하는 구조입니다. 피해, 상태이상, 텔레포트 같은 효과를 컴포넌트로 붙이기만 하면 새 함정이 됩니다.
 
-## 📦 프로젝트 1 — 마왕의 역습 (Demon King's Counterattack)
+4. **`DemonKing_마왕의역습/Script/ShopData/MonsterPurchaseService.cs`**
+   유닛을 팔 때 인벤토리 수량만 줄이면 편성 데이터랑 어긋나서, 편성까지 같이 정리하도록 처리했습니다.
 
-> 로그라이크 턴제 전략 RPG · PC (Windows) · Unity 6000.0.58f2 · 2025 G-STAR 출품 팀 프로젝트
-> 마왕군을 모집·강화·편성해 노드형 맵을 진행하며 인간 진영과 전투하는 전략 RPG.
+5. **`DemonKing_마왕의역습/Script/Tutorial/ClickDebugger.cs`**
+   튜토리얼 클릭이 갑자기 안 먹던 적이 있었는데, 마우스가 뭘 누르고 있는지 화면에 전부 뿌려주는 디버그 툴을 만들어서 원인(투명 Canvas가 클릭을 가로채고 있었음)을 찾아 해결했습니다.
 
-🎬 **게임플레이 영상** · https://youtu.be/cemIf2itGcE
+## 마왕의 역습 (Demon King's Counterattack)
 
-| 시스템 | 핵심 파일 | 설명 |
-|--------|-----------|------|
-| 튜토리얼 | `Script/Tutorial/TutorialManager.cs` | 14단계 enum 상태 기반 튜토리얼. `DontDestroyOnLoad`로 씬 전환에도 상태 유지 |
-| 상점/경제 | `Script/ShopData/MonsterPurchaseService.cs` | 자원·스테이지·튜토리얼 검증 후 구매. 판매 시 편성 데이터까지 동기화 |
-| 스킬 강화 | `Script/Skill/SkillUpgrade.cs` | 순차 해금 + 자원 검증 + 전역 상태 저장으로 씬 전환 후 레벨 유지 |
-| 도감/인벤토리 | `Script/Inventory/` | 획득/조우 여부에 따른 정보 공개, 도감 진행감 강화 |
-| 전투 로그/사운드 | `Script/BattleLog/`, `Script/UI/`, `Script/SceneMove/` | 전투 로그 자동 스크롤, 사운드, 로딩/인트로 연출 |
+로그라이크 턴제 전략 RPG · PC · 팀 4명 · 2025.08~11 (2025 G-STAR 출품)
+마왕군을 모으고 종족별로 강화해서 인간 진영이랑 싸우는 게임입니다.
 
-## 📦 프로젝트 2 — 스톨른 타임 (Stolen Time)
+플레이 영상 : https://youtu.be/cemIf2itGcE
 
-> 2D 그리드 기반 로그라이크 액션 RPG · PC (Windows) · Unity · C#
-> 제한 시간 안에 던전을 돌파하는 탐험·성장 루프.
+제가 한 부분 (`DemonKing_마왕의역습/Script/`)
+- 유닛 데이터 관리, 상점/경제 (`ShopData/`)
+- 인벤토리, 도감 (`Inventory/`)
+- 스킬 강화 (`Skill/`)
+- 튜토리얼 (`Tutorial/`)
+- 전투 로그, 사운드, 로딩 UI (`BattleLog/`, `UI/`, `SceneMove/`)
 
-🎬 **게임플레이 영상** · https://youtu.be/kZlq0dAkhEo
+전투 로직 자체는 다른 팀원이 맡았고, 저는 유닛 데이터와 UI 쪽을 했습니다.
 
-| 시스템 | 핵심 파일 | 설명 |
-|--------|-----------|------|
-| 격자 인벤토리 | `02. Scripts/Inventory/ItemGrid.cs` | 아이템 크기 기반 2D 격자 배치. 점유 칸에 같은 참조 기록, 경계·겹침 검사 |
-| 타겟팅 UX | `02. Scripts/Inventory/InventoryTargetingController.cs` | 투척/주문서 등 "사용 후 대상 선택" 상태 머신, 중복 입력 차단 |
-| 장비/스탯 동기화 | `02. Scripts/Equipment/NYHEquipmentController.cs` | 총합 재계산 후 이전 적용값과의 **차이(diff)만 반영**해 중복·누락 방지 |
-| 함정 시스템 | `02. Scripts/Traps/ITrapEffect.cs`, `GridTrap.cs`, `TrapSystem.cs` | `ScriptableObject` + `ITrapEffect` 조합형 효과(피해·상태이상·지형·텔레포트·소환·지연) |
-| 오디오/플레이어 | `02. Scripts/Audio/`, `02. Scripts/Player/` | AudioMixer 볼륨 저장, BGM 크로스페이드, 그리드 이동/전투 피드백 |
+## 스톨른 타임 (Stolen Time)
 
----
+2D 그리드 로그라이크 액션 RPG · PC · 팀 5명 · 2025.04 ~ 현재 (개발 중)
+제한 시간 안에 던전을 돌파하는 게임입니다.
 
-## 🛠 기술적으로 신경 쓴 점
+플레이 영상 : https://youtu.be/kZlq0dAkhEo
 
-- **데이터 일관성** — 구매·판매·편성이 얽히는 구간에서 상태 변경 기준을 명확히 두어 인벤토리/편성 데이터 불일치를 방지했습니다.
-- **확장 가능한 구조** — `ScriptableObject`와 인터페이스(`ITrapEffect`) 조합으로 기획 변경과 신규 콘텐츠 추가에 유연하게 대응했습니다.
-- **Unity 생명주기 관리** — 씬 전환 시 `DontDestroyOnLoad` 루트 분리, `sceneLoaded` 이벤트 구독으로 상태를 안전하게 유지했습니다.
+제가 한 부분 (`StolenTime_스톨른타임/02. Scripts/`)
+- 격자 인벤토리, 아이템 사용/타겟팅 (`Inventory/`)
+- 장비, 스탯 연동 (`Equipment/`)
+- 함정 시스템 (`Traps/`)
+- 오디오 (`Audio/`)
+- 플레이어 이동, 전투 피드백 (`Player/`)
 
-## 📁 폴더 구조
+## 폴더 구성
 
 ```
-DemonKing_마왕의역습/Script/   ← 마왕의 역습, 본인 담당(NYH) 코드
-StolenTime_스톨른타임/02. Scripts/ ← 스톨른 타임, 본인 담당(NYH) 코드
+DemonKing_마왕의역습/Script/       마왕의 역습 - 제 담당 코드
+StolenTime_스톨른타임/02. Scripts/   스톨른 타임 - 제 담당 코드
 ```
 
-> 본 저장소의 코드는 팀 프로젝트의 일부이며, 본인이 작성한 `NYH` 파트입니다. 프로젝트 전체 저작권은 각 팀에 있습니다.
+위 코드는 팀 프로젝트의 일부이며, 제가 작성한 NYH 파트입니다. 게임 전체 저작권은 각 팀에 있습니다.
